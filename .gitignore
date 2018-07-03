@@ -1,0 +1,7 @@
+node_modules/
+.lambda/
+deploy.env
+package-lock.json
+.metadata/
+.recommenders/
+react-app/build/

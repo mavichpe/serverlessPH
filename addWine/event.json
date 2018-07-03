@@ -1,0 +1,12 @@
+{
+  "body": {
+		"name": "Name",
+    "primary_category":"Cat 1",
+    "secondary_category":"Cat 2",
+    "origin":"Origin",
+    "producer_name":"Producer",
+    "tasting_note":"Tasting",
+    "regular_price_in_cents":0,
+    "image_thumb_url":"url"    
+  }
+}
