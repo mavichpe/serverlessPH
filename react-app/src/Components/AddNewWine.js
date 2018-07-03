@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
 import FormInput from './FormInput';
-import { put } from 'axios';
 import FileBase64  from 'react-file-base64';
-import APIContants from '../Utils/Constants';
 
 class AddNewWine extends Component {
     constructor(props) {
@@ -74,17 +72,19 @@ class AddNewWine extends Component {
           );
     }
 
-    handleSubmit = (event) =>{
-      event.preventDefault();
-      const url = APIContants.baseUrl + '/v1/wines';      
-      put(url, this.state,{}).then((response) =>{
-        console.log(response);
-        alert("the new Wine has been added");
-        this.handleFormClear();
-      }).catch(function (error) {
-        console.log(error);
-        alert("The new Wine hasn't been added");
-      })
+    handleSubmit = (event) => {
+      this.props.addCallback(this.state, event)
+        .then(() => this.handleFormClear())
+      // event.preventDefault();
+      // const url = APIContants.baseUrl + '/v1/wines';      
+      // put(url, this.state,{}).then((response) =>{
+      //   console.log(response);
+      //   alert("the new Wine has been added");
+      //   this.handleFormClear();
+      // }).catch(function (error) {
+      //   console.log(error);
+      //   alert("The new Wine hasn't been added");
+      // })
     }
   }
   

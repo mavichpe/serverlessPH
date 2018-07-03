@@ -3,20 +3,22 @@ import WineListItem from './WineListItem';
 import WineQuickView from './WineQuickView';
 import Button from './Button';
 
-import wines from '../wines.json';
-
 class WineList extends Component {
     constructor(props) {
       super(props);
-      this.state = {quickViewItem: {}};
+      this.state = {
+        quickViewItem: {},
+      };
     }
+    
+
     render() {
       return (
         <div className="wide-list">          
             <h2 className="title">Wine List</h2>
             <Button buttonTitle="I'm feeling lucky" onclick={this.showRamdomWine} modalToggle="#quick-view" buttonType="success"/>
             <div className="row" >             
-                {wines.map(w =>{
+                {this.props.wines.map(w =>{
                   return <WineListItem setQuickViewItem = {this.setQuickViewItem} wineData={w}/>
                 })}
             </div>
@@ -26,7 +28,7 @@ class WineList extends Component {
     }
 
     showRamdomWine = () =>{
-      let randomWine =  wines[Math.floor((Math.random()*wines.length))];
+      let randomWine =  this.props.wines[Math.floor((Math.random()*this.props.wines.length))];
       this.setState({ quickViewItem: randomWine});      
     }
 
