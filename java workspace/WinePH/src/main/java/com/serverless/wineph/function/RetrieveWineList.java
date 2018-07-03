@@ -7,6 +7,7 @@ import java.io.OutputStreamWriter;
 import java.util.List;
 import java.util.Map;
 
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
@@ -34,7 +35,7 @@ public class RetrieveWineList implements RequestStreamHandler {
 		LambdaLogger logger = context.getLogger();
 
 		JSONObject responseJson = new JSONObject();
-		JSONObject responseBody = new JSONObject();
+		JSONArray responseBody = new JSONArray();
 
 		try {
 			logger.log("Loading Java Lambda handler of ProxyWithStream");
@@ -48,13 +49,12 @@ public class RetrieveWineList implements RequestStreamHandler {
 			ScanResult result = client.scan(scanRequest);
 			List<Map<String, AttributeValue>> itemList = result.getItems();
 			itemList.stream().map(this::convertoJsonObject).forEach(i -> {
-			    responseBody.put(i.get("id"), i);
+			    responseBody.add(i);
 			});      			
 			
 			responseJson.put("statusCode", 200);			
 		} catch (Exception e) {
-			responseJson.put("statusCode", 400);
-			responseBody.put("error-message", e.getMessage());
+			responseJson.put("statusCode", 400);			
 			logger.log(e.getMessage());
 		}
 		
@@ -83,7 +83,7 @@ public class RetrieveWineList implements RequestStreamHandler {
         jsonItem.put("origin", dynamoItem.getOrDefault("origin", new AttributeValue("")).getS());
         jsonItem.put("producer_name", dynamoItem.getOrDefault("producer_name", new AttributeValue("")).getS());
         jsonItem.put("image_thumb_url", dynamoItem.getOrDefault("image_thumb_url", new AttributeValue("")).getS());
-        jsonItem.put("regular_price_in_cents", dynamoItem.getOrDefault("regular_price_in_cents", new AttributeValue("0")).getS());
+        jsonItem.put("regular_price_in_cents", dynamoItem.get("regular_price_in_cents").getN());
         
         return jsonItem;		
 	}
