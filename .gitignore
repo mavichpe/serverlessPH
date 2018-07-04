@@ -5,3 +5,5 @@ package-lock.json
 .metadata/
 .recommenders/
 react-app/build/
+react-app/build v1/
+react-app/build v2/

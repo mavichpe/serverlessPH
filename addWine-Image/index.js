@@ -22,9 +22,7 @@
 var AWS = require('aws-sdk');
 AWS.config.update({region: 'us-west-2'});
 const config = require('./config.js');
-const fs = require("fs");
 const logger = config.logger;
-const uuidv1 = require('uuid/v1');
 
 createResponse = (statusCode,responseBody)=>{
   return {
@@ -45,51 +43,69 @@ exports.handler =  function handler(event, context, callback) {
       callback(null,createResponse(400,responseBody));
       return;
   }
-  // Body is passed as string needs to be converted to Json
+  if (event.statusCode != 200) {
+    logger.log().error('error in previos lambda');         
+    callback(null,event);
+    return;
+  }
   // Body may be passed as string so we needs to be convert it to Json
   if(typeof event.body !== 'object'){
     event.body = JSON.parse(event.body);
   }
 
-  // create new DynamoDB service object
-  ddb = new AWS.DynamoDB({apiVersion: '2012-10-08'});
-  let generatedId = uuidv1();
-  var params = {
-    TableName: 'wines',
-    Item: {
-      'id' : {S:generatedId},
-      "name": {S:event.body.name},
-      "primary_category": {S:event.body.primary_category},
-      "secondary_category": {S:event.body.secondary_category},
-      "origin": {S:event.body.origin},
-      "producer_name": {S:event.body.producer_name},
-      "tasting_note": {S:event.body.tasting_note},
-      "regular_price_in_cents": {N: "" + event.body.regular_price_in_cents},
-      "image_thumb_url":{S:event.body.image_thumb_url}
+  let filename = event.body.generatedId+".png";
+  let imageBuffer = new Buffer(event.body.image_thumb_url.replace(/^data:image\/\w+;base64,/, ""),'base64');
+
+  const S3 = new AWS.S3();
+  S3.putObject({
+    Bucket: config.bucket,
+    Key: filename,
+    Body: imageBuffer,
+    ContentType: 'image/png',
+  }, (error) => {
+    if (error != null) {
+        logger.log({ error }).error('Unable to send file to S3');
+        responseBody["stored"] = false ;      
+        responseBody["message"] = "unable to send file to S3" ;                  
+        callback(null,createResponse(400,responseBody));
+        return;
+    } else {
+        logger.log().info('Upload done! :'+filename);
     }
+  });
+
+  let s3ImageUrl = config.bucket+"/"+filename;
+
+  // create new DynamoDB service object
+  var docClient = new AWS.DynamoDB.DocumentClient();
+
+  var params = {
+      TableName: "wines",
+      Key:{
+          "id": event.body.generatedId,
+      },
+      UpdateExpression: "set image_thumb_url = :i",
+      ExpressionAttributeValues:{
+          ":i": s3ImageUrl         
+      },
+      ReturnValues:"UPDATED_NEW"
   };
   logger.log(params).info("Params");
 
   let responseBody = {};
 
-  // Call DynamoDB to add the item to the table
-  ddb.putItem(params, function(err, data) {
+  docClient.update(params, function(err, data) {
     if (err) {
       responseBody["stored"] = false ;      
-      responseBody["message"] = "Error Saving the register: "+ err ;      
-      logger.log(err).error("Error");
-      
+      responseBody["message"] = "Error storing the image: "+ err ;      
+      logger.log(err).error("Error");      
       callback(null,createResponse(400,responseBody));
     } else {
       responseBody["stored"] = true ;
-      responseBody["message"] = "Saved" ;      
-
-      responseBody["generatedId"] = generatedId ;
-      responseBody["image_thumb_url"] = event.body.image_thumb_url ;
+      responseBody["message"] = "Saved" ;  
+      responseBody["generatedId"] = event.body.generatedId ;
       logger.log(data).info("Success");      
       callback(null, createResponse(200,responseBody));
     }
   });
-  
-  
 }
