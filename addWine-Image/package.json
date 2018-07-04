@@ -1,0 +1,31 @@
+{
+  "name": "addwine",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "setup": "./node_modules/.bin/node-lambda setup",
+    "test": "./node_modules/.bin/node-lambda run",
+    "package": "./node_modules/.bin/node-lambda package",
+    "deploy": "./node_modules/.bin/node-lambda deploy"
+  },
+  "keywords": [
+    "aws",
+    "amazon",
+    "lambda",
+    "javascript"
+  ],
+  "author": "Mavichpe <mavichpe@hotmail.com>",
+  "license": "UNLICENSED",
+  "dependencies": {
+    "hewer": "^0.3.1",
+    "aws-sdk": "2.267.1"
+  },
+  "devDependencies": {
+    "babel-core": "^6.0.20",
+    "babel-polyfill": "^6.0.16",
+    "babel-preset-es2015": "^6.0.15",
+    "babel-preset-stage-0": "^6.0.15",
+    "node-lambda": "0.11.7"
+  }
+}
