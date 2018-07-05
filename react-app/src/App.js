@@ -3,7 +3,7 @@ import WineList from './Components/WineList';
 import logo from './logo.svg';
 import Button from './Components/Button';
 import AddNewWine from './Components/AddNewWine';
-import { get, put } from 'axios';
+import { get, post } from 'axios';
 import APIContants from './Utils/Constants';
 import './App.css';
 
@@ -31,8 +31,8 @@ class App extends Component {
 
   addNewWine = (form, event) => {
     event.preventDefault();
-    const url = APIContants.baseUrl + '/v1/wines';      
-    return put(url, form,{}).then((response) =>{
+    const url = APIContants.baseUrl + '/v3/wines';      
+    return post(url, form,{}).then((response) =>{
       console.log(response);
       alert("the new Wine has been added");
       this.retrieveWineList();

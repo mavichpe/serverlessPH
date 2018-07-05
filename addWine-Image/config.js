@@ -30,5 +30,6 @@ function Formatter() {
 
 module.exports = {
     logger: new hewer.Logger(null, null, new Formatter()),
-    bucket: 'bucket-name',    
+    bucket: 'marcoph-images',   
+    cloudFrontUrl :process.env.MAVICHPE_CLOUDFRONT_URL 
 };
