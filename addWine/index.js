@@ -38,6 +38,8 @@ createResponse = (statusCode,responseBody)=>{
 
 
 exports.handler =  function handler(event, context, callback) {
+  let responseBody = {};
+
   if (!event.body) {
       logger.log().error('unable to get the event body');
       responseBody["stored"] = false ;      
@@ -69,8 +71,6 @@ exports.handler =  function handler(event, context, callback) {
     }
   };
   logger.log(params).info("Params");
-
-  let responseBody = {};
 
   // Call DynamoDB to add the item to the table
   ddb.putItem(params, function(err, data) {
