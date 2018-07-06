@@ -62,6 +62,7 @@ exports.handler =  function handler(event, context, callback) {
     Key: filename,
     Body: imageBuffer,
     ContentType: 'image/png',
+    ACL:'public-read'
   }, (error) => {
     if (error != null) {
         logger.log({ error }).error('Unable to send file to S3');
@@ -74,7 +75,7 @@ exports.handler =  function handler(event, context, callback) {
     }
   });
 
-  let s3ImageUrl = config.bucket+"/"+filename;
+  let s3ImageUrl = config.cloudFrontUrl+filename;
 
   // create new DynamoDB service object
   var docClient = new AWS.DynamoDB.DocumentClient();
